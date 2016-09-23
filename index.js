@@ -6,6 +6,7 @@ var rangeParser = require('range-parser')
 var ndjson = require('ndjson')
 var encoding = require('dat-encoding')
 var through = require('through2')
+var debug = require('debug')('hyperdrive-http')
 
 module.exports = HyperdriveHttp
 
@@ -19,6 +20,8 @@ function HyperdriveHttp (getArchive) {
   }
   var onrequest = function (req, res) {
     var datUrl = parse(req)
+    debug('http request', req.url)
+    debug('parsed url', datUrl)
     if (!datUrl) return onerror(404, res)
     getArchive(datUrl, function (err, archive) {
       if (err) return onerror(err, res)
@@ -112,6 +115,7 @@ function archiveResponse (datUrl, archive, req, res) {
 }
 
 function onerror (status, res) {
+  debug('error', status)
   if (typeof status !== 'number') {
     console.error(status)
     status = 404
